@@ -5,7 +5,7 @@ def face_process():
     bus = MessageBus()
     analyzer = FaceAnalyzer()
 
-    pubsub = bus.subscribe("camera")
+    pubsub = bus.subscribe("frames")
 
     while True:
         frame = bus.receive_frame(pubsub)
