@@ -10,7 +10,7 @@ from processes.brain import brain_process
 from processes.retrain import retrain_process
 from processes.slam import slam_process
 from processes.gesture import gesture_process
-from processes.vision_brain import vision_brain_process
+from processes.vision_brain import VisionBrain
 
 if __name__ == "__main__":
 
@@ -38,7 +38,7 @@ if __name__ == "__main__":
 
         mp.Process(target=gesture_process),
         
-        mp.Process(target=vision_brain_process),
+        mp.Process(target=VisionBrain),
     ]
 
     for p in processes:

@@ -1,14 +1,32 @@
-from vision.face_analysis import FaceAnalyzer
-from utils.message_bus import MessageBus
+# processes/face.py
 
-def face_process():
-    bus = MessageBus()
-    analyzer = FaceAnalyzer()
+import insightface
+import numpy as np
 
-    pubsub = bus.subscribe("frames")
+app = insightface.app.FaceAnalysis()
+app.prepare(ctx_id=-1)
+
+def face_process(bus):
+    print("[FACE] Started with InsightFace")
 
     while True:
-        frame = bus.receive_frame(pubsub)
-        if frame is not None:
-            face_data = analyzer.analyze(frame)
-            bus.send_json("face", face_data)
+        msg = bus.receive("frames")
+        if msg is None:
+            continue
+
+        frame = msg["frame"]
+
+        faces = app.get(frame)
+
+        results = []
+
+        for face in faces:
+            bbox = face.bbox.astype(int).tolist()
+
+            results.append({
+                "bbox": bbox,
+                "confidence": float(face.det_score),
+                "embedding": face.embedding.tolist()  # 🔥 това е за разпознаване
+            })
+
+        bus.send_json("faces", results)
